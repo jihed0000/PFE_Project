@@ -29,6 +29,13 @@ namespace PFEProject
             return (vtkPolyData) reader.GetRenderer().GetActors().GetLastActor().GetMapper().GetInputAsDataSet();
         }
 
+        public static vtkPolyData readxyz(string filename)
+        {
+            vtkSimplePointsReader reader = new vtkSimplePointsReader();
+            reader.SetFileName(filename);
+            reader.Update();
+            return reader.GetOutput();
+        }
         public static void SaveObj(string filename, vtkPolyData data)
         {
             mapper.SetInput(data);
