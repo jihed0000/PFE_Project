@@ -1,10 +1,13 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using System.Windows.Media.Media3D;
 using Kitware.VTK;
+
+#endregion
 
 namespace PFEProject
 {
@@ -21,11 +24,12 @@ namespace PFEProject
         private vtkRenderWindow _renderWindow = new vtkGenericOpenGLRenderWindow();
         private RenderWindowControl _renderWindowControl1 = new RenderWindowControl();
         private vtkRenderer _renderer = new vtkOpenGLRenderer();
+        public double nbrecourbes = 100;
 
         public Face()
         {
-            
         }
+
         public Face(vtkPolyData polydata)
         {
             PolyData = polydata;
@@ -43,7 +47,7 @@ namespace PFEProject
             get { return _collectionCurves; }
             set { _collectionCurves = value; }
         }
-        
+
         public vtkPolyDataMapper Mapper
         {
             get { return _mapper; }
@@ -89,11 +93,11 @@ namespace PFEProject
             _renderWindowControl1 = renderWindowControl1;
             return renderWindowControl1;
         }
-       
+
 
         public void RenderLandmarks(int i)
         {
-            vtkSphereSource _vtkSphere = vtkSphereSource.New();
+            var _vtkSphere = vtkSphereSource.New();
             _vtkSphere.SetRadius(5);
 
             _vtkSphere.SetCenter(_matrix[i][0], _matrix[i][1], _matrix[i][2]);
@@ -102,7 +106,7 @@ namespace PFEProject
 
         public void Renderlandmarklocation(double[] location)
         {
-            vtkSphereSource _vtkSphere = vtkSphereSource.New();
+            var _vtkSphere = vtkSphereSource.New();
             _vtkSphere.SetRadius(2);
 
             _vtkSphere.SetCenter(location[0], location[1], location[2]);
@@ -116,9 +120,9 @@ namespace PFEProject
                 _renderer.RemoveActor(_renderer.GetActors().GetLastActor());
             }
             sphere.Update();
-            vtkPolyDataMapper mapper = vtkPolyDataMapper.New();
+            var mapper = vtkPolyDataMapper.New();
             mapper.SetInputConnection(sphere.GetOutputPort());
-            vtkActor actor = vtkActor.New();
+            var actor = vtkActor.New();
             actor.SetMapper(mapper);
 
             // vtkRenderer renderer = _renderWindow.GetRenderers().GetFirstRenderer();
@@ -136,17 +140,17 @@ namespace PFEProject
             }
             for (int i = 1; i < 84; i++)
             {
-                vtkSphereSource _vtkSphere = vtkSphereSource.New();
+                var _vtkSphere = vtkSphereSource.New();
                 _vtkSphere.SetRadius(2);
                 _vtkSphere.SetCenter(_matrix[i][0], _matrix[i][1], _matrix[i][2]);
-                vtkPolyDataMapper mapper = vtkPolyDataMapper.New();
+                var mapper = vtkPolyDataMapper.New();
                 mapper.SetInputConnection(_vtkSphere.GetOutputPort());
-                vtkActor actor = vtkActor.New();
+                var actor = vtkActor.New();
                 actor.SetMapper(mapper);
                 actor.GetProperty().SetColor(1, 0, 0);
                 _actors.Add(actor);
             }
-            foreach (vtkActor actor in _actors)
+            foreach (var actor in _actors)
             {
                 Renderer.AddActor(actor);
             }
@@ -255,9 +259,8 @@ namespace PFEProject
             return PolyData;
         }
 
-        public unsafe int NewMethodeextraction(int nbsections, float paramSpline, int N)
+        public int NewMethodeextraction(int nbsections, float paramSpline, int N)
         {
-
             var nose1 = new double[3];
             nose1 = noseLocation;
             double theta = 0;
@@ -281,18 +284,17 @@ namespace PFEProject
             var planvert = new vtkPlane();
             planvert.SetOrigin(nose1[0], nose1[1], nose1[2]);
             planvert.SetNormal(Math.Cos(theta), Math.Sin(theta), 0);
-          
+
             double anglep1 = Epsilon;
-        
+
             var transfp1 = new vtkTransform();
             transfp1.RotateWXYZ(anglep1, 0, 0, 1);
-           
-         
-            
+
+
             var cutter1 = new vtkCutter();
             cutter1.SetInput(vis_sup);
             cutter1.SetCutFunction(planvert);
-           
+
             var cutter2 = new vtkCutter();
             cutter2.SetInput(vis_inf);
             cutter2.SetCutFunction(planvert);
@@ -326,7 +328,7 @@ namespace PFEProject
             int vrif;
             int vrif1;
             double angle = 180/(double) nbsections;
-           
+
 
             var appcourebsousechantillone1 = new vtkAppendPolyData();
             var appcourebsousechantillone2 = new vtkAppendPolyData();
@@ -403,8 +405,8 @@ namespace PFEProject
                 {
                     pid[0] = Points3d.InsertNextPoint(ptMask1.GetOutput().GetPoints().GetPoint(i)[0],
                         ptMask1.GetOutput().GetPoints().GetPoint(i)[1], ptMask1.GetOutput().GetPoints().GetPoint(i)[2]);
-                    GCHandle hanss = GCHandle.Alloc(pid, GCHandleType.Pinned);
-                    IntPtr pr = hanss.AddrOfPinnedObject();
+                    var hanss = GCHandle.Alloc(pid, GCHandleType.Pinned);
+                    var pr = hanss.AddrOfPinnedObject();
                     Vertices.InsertNextCell(1, pr);
                 }
 
@@ -415,8 +417,8 @@ namespace PFEProject
                 var Result = new vtkIdList();
                 PointTree = new vtkPointLocator();
                 PointTree.SetDataSet(polydata);
-                GCHandle h = GCHandle.Alloc(polydata.GetPoints().GetBounds(), GCHandleType.Pinned);
-                IntPtr pointr = h.AddrOfPinnedObject();
+                var h = GCHandle.Alloc(polydata.GetPoints().GetBounds(), GCHandleType.Pinned);
+                var pointr = h.AddrOfPinnedObject();
 
                 PointTree.InitPointInsertion(polydata.GetPoints(), pointr);
                 PointTree.BuildLocator();
@@ -433,8 +435,8 @@ namespace PFEProject
                 {
                     pid1[0] = Points3d1.InsertNextPoint(ptMask2.GetOutput().GetPoints().GetPoint(i)[0],
                         ptMask2.GetOutput().GetPoints().GetPoint(i)[1], ptMask2.GetOutput().GetPoints().GetPoint(i)[2]);
-                    GCHandle hh = GCHandle.Alloc(pid1, GCHandleType.Pinned);
-                    IntPtr prr = hh.AddrOfPinnedObject();
+                    var hh = GCHandle.Alloc(pid1, GCHandleType.Pinned);
+                    var prr = hh.AddrOfPinnedObject();
 
                     Vertices1.InsertNextCell(1, prr);
                 }
@@ -443,14 +445,14 @@ namespace PFEProject
                 polydata1.SetVerts(Vertices1);
 
                 var Result1 = new vtkIdList();
-                int ptId_nose2=0;
+                int ptId_nose2 = 0;
                 PointTree1 = new vtkPointLocator();
                 PointTree1.SetDataSet(polydata1);
-                GCHandle hhh = GCHandle.Alloc(polydata1.GetPoints().GetBounds(), GCHandleType.Pinned);
-                IntPtr pa = hhh.AddrOfPinnedObject();
+                var hhh = GCHandle.Alloc(polydata1.GetPoints().GetBounds(), GCHandleType.Pinned);
+                var pa = hhh.AddrOfPinnedObject();
                 PointTree1.InitPointInsertion(polydata1.GetPoints(), pa);
                 //PointTree1.InsertUniquePoint(nose1,ptId_nose2);
-               PointTree1.BuildLocator();
+                PointTree1.BuildLocator();
                 vrif1 = PointTree1.IsInsertedPoint(nose1[0], nose1[1], nose1[2]);
                 PointTree1.FindClosestNPoints(N, nose1[0], nose1[1], nose1[2], Result1);
 
@@ -523,7 +525,7 @@ namespace PFEProject
                 cSup = new Curve(polyDataordonne1);
                 cSup.beta_rep = polyDataordonne1.GetPoints();
                 cSup.q_rep = cSup.Curve2q(cSup.beta_rep, Nb - 1);
-             
+
                 Curve cInf;
                 cInf = new Curve(polyDataordonne2);
                 cInf.beta_rep = polyDataordonne2.GetPoints();
@@ -531,12 +533,12 @@ namespace PFEProject
                 demi_profil_sup.Add(cSup);
                 demi_profil_inf.Add(cInf);
                 //rotation of the cutting plane around normal
-                GCHandle ham = GCHandle.Alloc(planvert.GetNormal(), GCHandleType.Pinned);
-                IntPtr prt = ham.AddrOfPinnedObject();
-                GCHandle hamm = GCHandle.Alloc(new_normal, GCHandleType.Pinned);
-                IntPtr prt2 = hamm.AddrOfPinnedObject();
-                planvert.SetNormal(Math.Cos(theta), Math.Sin(theta),0);
-                theta += (2*Math.PI) / nbrecourbes;
+                var ham = GCHandle.Alloc(planvert.GetNormal(), GCHandleType.Pinned);
+                var prt = ham.AddrOfPinnedObject();
+                var hamm = GCHandle.Alloc(new_normal, GCHandleType.Pinned);
+                var prt2 = hamm.AddrOfPinnedObject();
+                planvert.SetNormal(Math.Cos(theta), Math.Sin(theta), 0);
+                theta += (2*Math.PI)/nbrecourbes;
                 //   planvert.SetNormal(new_normal[0], new_normal[1], new_normal[2]);
             }
             /*       		cutter1.Delete();cutter2.Delete();stripper1.Delete();stripper1.Delete();stripper2.Delete();spline1.Delete();spline2.Delete();ptMask1.Delete();
@@ -547,7 +549,7 @@ namespace PFEProject
 
 //__________________________________________________________________________________________________________________________________
 
-            
+
             for (int i = 0; i < demi_profil_sup.Count; i++)
             {
                 CollectionCurves.Add(demi_profil_sup[i]);
@@ -557,7 +559,7 @@ namespace PFEProject
             {
                 CollectionCurves.Add(demi_profil_inf[i]);
             }
-            
+
             //demi_profil_sup.Curve::~Curve;
             //demi_profil_inf.Curve::~Curve;
             /*for(int i=0;i<this.Collection_curves.size();i++)
@@ -565,181 +567,167 @@ namespace PFEProject
 		cout<<"nb(r de point beta ["<<i<<"]"<<this.Collection_curves[i].beta_rep.GetNumberOfPoints()<<endl;
 		cout<<"nb(r de point q ["<<i<<"]"<<this.Collection_curves[i].q_rep.GetNumberOfPoints()<<endl;
 	}*/
-          
+
             return 1;
         }
-
-        public double nbrecourbes = 100;
 
         public void save_curves(string str)
         {
             string s = "";
-            foreach (Curve c in CollectionCurves)
+            foreach (var c in CollectionCurves)
             {
                 for (int i = 0; i < c.beta_rep.GetNumberOfPoints(); i++)
                 {
-                      s += c.beta_rep.GetPoint(i)[0] + "\t" + c.beta_rep.GetPoint(i)[1] + "\t" + c.beta_rep.GetPoint(i)[2] + "\n";
+                    s += c.beta_rep.GetPoint(i)[0] + "\t" + c.beta_rep.GetPoint(i)[1] + "\t" + c.beta_rep.GetPoint(i)[2] +
+                         "\n";
                 }
             }
-             System.IO.File.WriteAllText(str, s);
+            File.WriteAllText(str, s);
         }
 
         public void myextraction()
         {
-            double theta = Math.PI /2;
-            vtkPlane plan = new vtkPlane();
+            double theta = Math.PI/2;
+            var plan = new vtkPlane();
             plan.SetOrigin(noseLocation[0], noseLocation[1], noseLocation[2]);
             plan.SetNormal(Math.Cos(theta), Math.Sin(theta), 0);
-            vtkTransform trans = new vtkTransform();
-       
-            vtkCutter c = new vtkCutter();
+            var trans = new vtkTransform();
+
+            var c = new vtkCutter();
             c.SetCutFunction(plan);
             c.SetInput(PolyData);
-        
-            vtkTransformPolyDataFilter filter = new vtkTransformPolyDataFilter();
+
+            var filter = new vtkTransformPolyDataFilter();
             filter.SetTransform(trans);
             filter.SetInput(c.GetOutput());
-            c.Update();filter.Update();
-            vtkPolyData vis_d = new vtkPolyData();
+            c.Update();
+            filter.Update();
+            var vis_d = new vtkPolyData();
             vis_d = filter.GetOutput();
-         
-            vtkActor inputactor = new vtkActor();
-            vtkPolyDataMapper inputmapper = vtkPolyDataMapper.New();
+
+            var inputactor = new vtkActor();
+            var inputmapper = vtkPolyDataMapper.New();
             if (_renderer.GetActors().GetNumberOfItems() != 1)
             {
                 _renderer.RemoveActor(_renderer.GetActors().GetLastActor());
             }
-        inputmapper.SetInput(vis_d);
+            inputmapper.SetInput(vis_d);
             inputactor.SetMapper(inputmapper);
-            inputactor.GetProperty().SetColor(1,0,0);
-                Renderer.AddActor(inputactor);
-           
+            inputactor.GetProperty().SetColor(1, 0, 0);
+            Renderer.AddActor(inputactor);
+
             _renderWindow.Render();
-
-
-
-
-
-
         }
 
         public void affichage_courbe()
         {
-            NewMethodeextraction((int)nbrecourbes/2, 0.01f, 50);
-            vtkPolyDataMapper face_adjusted = vtkPolyDataMapper.New();
-            face_adjusted.SetInput(this.PolyData);
+            NewMethodeextraction((int) nbrecourbes/2, 0.01f, 50);
+            var face_adjusted = vtkPolyDataMapper.New();
+            face_adjusted.SetInput(PolyData);
             face_adjusted.ScalarVisibilityOff();
-            vtkActor face_actor=new vtkActor();
+            var face_actor = new vtkActor();
             face_actor.SetMapper(face_adjusted);
-            face_actor.GetProperty().SetColor(1,0,0);
+            face_actor.GetProperty().SetColor(1, 0, 0);
             _renderWindow.GetRenderers().GetFirstRenderer().AddActor(face_actor);
-            for (int kk = 0; kk < this.CollectionCurves.Count; kk++)
-            {vtkPolyData inputdata = new vtkPolyData();
-                vtkActor inputactor = new vtkActor();
-                vtkPolyDataMapper inputmapper = vtkPolyDataMapper.New();
-                vtkCellArray lines = new vtkCellArray();
-                inputdata.SetPoints(this.CollectionCurves[kk].beta_rep);
+            for (int kk = 0; kk < CollectionCurves.Count; kk++)
+            {
+                var inputdata = new vtkPolyData();
+                var inputactor = new vtkActor();
+                var inputmapper = vtkPolyDataMapper.New();
+                var lines = new vtkCellArray();
+                inputdata.SetPoints(CollectionCurves[kk].beta_rep);
                 lines.InsertNextCell(inputdata.GetNumberOfPoints());
                 for (int i = 0; i < inputdata.GetNumberOfPoints(); i++)
-                lines.InsertCellPoint(i);
-                    inputdata.SetLines(lines);
-                  //  lines.FastDelete();
+                    lines.InsertCellPoint(i);
+                inputdata.SetLines(lines);
+                //  lines.FastDelete();
 
-                    inputmapper.SetInput(inputdata);
+                inputmapper.SetInput(inputdata);
                 inputactor.SetMapper(inputmapper);
                 inputactor.GetProperty().SetLineWidth(2);
-                inputactor.GetProperty().SetColor(0,1,0);
-              
-                    _actors.Add(inputactor); 
-               
-               
+                inputactor.GetProperty().SetColor(0, 1, 0);
 
-
-
+                _actors.Add(inputactor);
             }
             if (_renderer.GetActors().GetNumberOfItems() != 1)
             {
                 _renderer.RemoveActor(_renderer.GetActors().GetLastActor());
             }
-            foreach (vtkActor actor in _actors)
+            foreach (var actor in _actors)
             {
                 Renderer.AddActor(actor);
             }
             _renderWindow.Render();
-
         }
 
         public vtkRenderer affiche_DSF(Face face)
         {
-            this.PreProcessing();
+            PreProcessing();
             face.PreProcessing();
-            this.NewMethodeextraction((int)nbrecourbes/2, 0.01f, 50);
-            face.NewMethodeextraction((int)nbrecourbes / 2, 0.01f, 50);
-            int taille_courbe = this.CollectionCurves[0].beta_rep.GetNumberOfPoints();
-            vtkPoints points = new vtkPoints();
-            vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-            int nbre_points = this.CollectionCurves.Count*
-                                        this.CollectionCurves[0].beta_rep.GetNumberOfPoints();
+            NewMethodeextraction((int) nbrecourbes/2, 0.01f, 50);
+            face.NewMethodeextraction((int) nbrecourbes/2, 0.01f, 50);
+            int taille_courbe = CollectionCurves[0].beta_rep.GetNumberOfPoints();
+            var points = new vtkPoints();
+            var colors = new vtkUnsignedCharArray();
+            int nbre_points = CollectionCurves.Count*
+                              CollectionCurves[0].beta_rep.GetNumberOfPoints();
             colors.SetNumberOfComponents(3);
             double valeur_color;
-            vtkIntArray scalars = new vtkIntArray();
-            double[] couleurs = new double[5000];
+            var scalars = new vtkIntArray();
+            var couleurs = new double[5000];
             int cpt;
-            vtkLookupTable lut = new vtkLookupTable();
+            var lut = new vtkLookupTable();
             lut.SetNumberOfColors(256);
             lut.SetHueRange(0.667, 0);
             lut.Build();
-            vtkPoints pts = new vtkPoints();
-            vtkCellArray ca = new vtkCellArray();
-            vtkPolyData pd=new vtkPolyData();
-            vtkIntArray scalaires = new vtkIntArray();
-           vtkDataArray vects = new vtkDoubleArray();
-            
-           
+            var pts = new vtkPoints();
+            var ca = new vtkCellArray();
+            var pd = new vtkPolyData();
+            var scalaires = new vtkIntArray();
+            vtkDataArray vects = new vtkDoubleArray();
+
+
             int kk = 0;
             int jj = 0;
-            for (int i = 0; i < this.CollectionCurves.Count; i++)
+            for (int i = 0; i < CollectionCurves.Count; i++)
             {
-                this.CollectionCurves[i].calculer_alpha_point(face.CollectionCurves[i]);
+                CollectionCurves[i].calculer_alpha_point(face.CollectionCurves[i]);
             }
-           
-            for (kk = 0; kk < this.CollectionCurves.Count;kk ++)
+
+            for (kk = 0; kk < CollectionCurves.Count; kk ++)
             {
-               
-               
-                for (int i = 0; i < this.CollectionCurves[0].beta_rep.GetNumberOfPoints(); i++)
+                for (int i = 0; i < CollectionCurves[0].beta_rep.GetNumberOfPoints(); i++)
                 {
-                    pts.InsertNextPoint(this.CollectionCurves[kk].beta_rep.GetPoint(i)[0],
-                        this.CollectionCurves[kk].beta_rep.GetPoint(i)[1],
-                        this.CollectionCurves[kk].beta_rep.GetPoint(i)[2]);
+                    pts.InsertNextPoint(CollectionCurves[kk].beta_rep.GetPoint(i)[0],
+                        CollectionCurves[kk].beta_rep.GetPoint(i)[1],
+                        CollectionCurves[kk].beta_rep.GetPoint(i)[2]);
                     ca.InsertNextCell(1);
                     ca.InsertCellPoint(jj);
-                  
-                   
+
+
                     scalaires.InsertNextTuple1(MainScreen.Sc[jj]);
-                   // vects.InsertNextTuple3(MainScreen.Vc[jj].X, MainScreen.Vc[jj].Y, MainScreen.Vc[jj].Z);
-                    
+                    // vects.InsertNextTuple3(MainScreen.Vc[jj].X, MainScreen.Vc[jj].Y, MainScreen.Vc[jj].Z);
+
                     jj++;
                 }
-                
             }
             pd.SetPoints(pts);
             pd.SetVerts(ca);
             pd.GetPointData().SetScalars(scalaires);
-          
-          
-            vtkDelaunay2D t = new vtkDelaunay2D();
+
+
+            var t = new vtkDelaunay2D();
             t.SetInput(pd);
             t.Update();
-vtkSmoothPolyDataFilter s = new vtkSmoothPolyDataFilter();
+            var s = new vtkSmoothPolyDataFilter();
             s.SetInput(t.GetOutput());
             s.SetNumberOfIterations(0);
             s.Update();
-            vtkArrowSource arw = new vtkArrowSource();
+            var arw = new vtkArrowSource();
             arw.SetTipLength(0.3);
             arw.SetTipResolution(18);
             arw.SetTipRadius(0.2);
-            vtkGlyph3D glyp = new vtkGlyph3D();
+            var glyp = new vtkGlyph3D();
             glyp.SetSource(arw.GetOutput());
             glyp.SetInput(s.GetOutput());
             glyp.SetInputArrayToProcess(0, 0, 0, 0, "scalaires");
@@ -750,21 +738,21 @@ vtkSmoothPolyDataFilter s = new vtkSmoothPolyDataFilter();
             glyp.SetScaleModeToScaleByVector();
             glyp.OrientOn();
             glyp.Update();
-            vtkPolyDataMapper m = vtkPolyDataMapper.New();
+            var m = vtkPolyDataMapper.New();
             m.SetLookupTable(lut);
             m.SetInput(s.GetOutput());
-            m.SetScalarRange(MainScreen.Sc.Min(),MainScreen.Sc.Max());
-         
-            vtkScalarBarActor colorbar = new vtkScalarBarActor();
+            m.SetScalarRange(MainScreen.Sc.Min(), MainScreen.Sc.Max());
+
+            var colorbar = new vtkScalarBarActor();
             colorbar.SetLookupTable(lut);
             colorbar.SetWidth(0.05);
-            colorbar.SetPosition(0.95,0.1);
+            colorbar.SetPosition(0.95, 0.1);
             colorbar.SetMaximumNumberOfColors(256);
             colorbar.SetNumberOfLabels(4);
             colorbar.PickableOff();
             colorbar.VisibilityOn();
-         
-            vtkActor a = new vtkActor();
+
+            var a = new vtkActor();
             a.GetProperty().SetSpecular(0.3);
             a.GetProperty().SetSpecularPower(3);
             a.GetProperty().SetAmbient(0.1);
@@ -773,106 +761,104 @@ vtkSmoothPolyDataFilter s = new vtkSmoothPolyDataFilter();
             a.SetMapper(m);
             Renderer.AddActor(a);
 
-          
-            vtkPolyDataMapper m1 = vtkPolyDataMapper.New();
+
+            var m1 = vtkPolyDataMapper.New();
 
             m1.SetInput(glyp.GetOutput());
 
-           // vtkActor a2 = new vtkActor();
-           // a2.SetMapper(m1);
-           //Renderer.AddActor(a2);
-            Renderer.SetBackground(1,1,1);
+            // vtkActor a2 = new vtkActor();
+            // a2.SetMapper(m1);
+            //Renderer.AddActor(a2);
+            Renderer.SetBackground(1, 1, 1);
             Renderer.AddActor(colorbar);
             return Renderer;
         }
-        public vtkRenderer affiche_DSF(Face face , List<double> val  )
+
+        public vtkRenderer affiche_DSF(Face face, List<double> val)
         {
             //this.PreProcessing();
             //face.PreProcessing();
             //this.NewMethodeextraction((int)nbrecourbes / 2, 0.01f, 50);
             //face.NewMethodeextraction((int)nbrecourbes / 2, 0.01f, 50);
-            int taille_courbe = this.CollectionCurves[0].beta_rep.GetNumberOfPoints();
-            vtkPoints points = new vtkPoints();
-            vtkUnsignedCharArray colors = new vtkUnsignedCharArray();
-            int nbre_points = this.CollectionCurves.Count *
-                                        this.CollectionCurves[0].beta_rep.GetNumberOfPoints();
+            int taille_courbe = CollectionCurves[0].beta_rep.GetNumberOfPoints();
+            var points = new vtkPoints();
+            var colors = new vtkUnsignedCharArray();
+            int nbre_points = CollectionCurves.Count*
+                              CollectionCurves[0].beta_rep.GetNumberOfPoints();
             colors.SetNumberOfComponents(3);
             double valeur_color;
-            vtkIntArray scalars = new vtkIntArray();
-            double[] couleurs = new double[5000];
+            var scalars = new vtkIntArray();
+            var couleurs = new double[5000];
             int cpt;
-            vtkLookupTable lut = new vtkLookupTable();
+            var lut = new vtkLookupTable();
             lut.SetNumberOfColors(256);
-            lut.SetHueRange(0.667,0);
-        
-      //      lut.SetValueRange(val.Min(), val.Max());
+            lut.SetHueRange(0.667, 0);
+
+            //      lut.SetValueRange(val.Min(), val.Max());
             lut.Build();
-            vtkPoints pts = new vtkPoints();
-            vtkCellArray ca = new vtkCellArray();
-            vtkPolyData pd = new vtkPolyData();
-            vtkIntArray scalaires = new vtkIntArray();
+            var pts = new vtkPoints();
+            var ca = new vtkCellArray();
+            var pd = new vtkPolyData();
+            var scalaires = new vtkIntArray();
             vtkDataArray vects = new vtkDoubleArray();
             vtkRenderer ren = new vtkOpenGLRenderer();
 
             int kk = 0;
             int jj = 0;
-            for (int i = 0; i < this.CollectionCurves.Count; i++)
+            for (int i = 0; i < CollectionCurves.Count; i++)
             {
-                this.CollectionCurves[i].calculer_alpha_point(face.CollectionCurves[i]);
+                CollectionCurves[i].calculer_alpha_point(face.CollectionCurves[i]);
             }
 
-            for (kk = 0; kk < this.CollectionCurves.Count; kk++)
+            for (kk = 0; kk < CollectionCurves.Count; kk++)
             {
-
-
-                for (int i = 0; i < this.CollectionCurves[0].beta_rep.GetNumberOfPoints(); i++)
+                for (int i = 0; i < CollectionCurves[0].beta_rep.GetNumberOfPoints(); i++)
                 {
-                    pts.InsertNextPoint(this.CollectionCurves[kk].beta_rep.GetPoint(i)[0],
-                        this.CollectionCurves[kk].beta_rep.GetPoint(i)[1],
-                        this.CollectionCurves[kk].beta_rep.GetPoint(i)[2]);
+                    pts.InsertNextPoint(CollectionCurves[kk].beta_rep.GetPoint(i)[0],
+                        CollectionCurves[kk].beta_rep.GetPoint(i)[1],
+                        CollectionCurves[kk].beta_rep.GetPoint(i)[2]);
                     ca.InsertNextCell(1);
                     ca.InsertCellPoint(jj);
 
 
-                    scalaires.InsertNextTuple1( 255-255*val[jj]);
+                    scalaires.InsertNextTuple1(255 - 255*val[jj]);
                     // vects.InsertNextTuple3(MainScreen.Vc[jj].X, MainScreen.Vc[jj].Y, MainScreen.Vc[jj].Z);
 
                     jj++;
                 }
-
             }
             pd.SetPoints(pts);
             pd.SetVerts(ca);
             pd.GetPointData().SetScalars(scalaires);
 
 
-            vtkDelaunay2D t = new vtkDelaunay2D();
+            var t = new vtkDelaunay2D();
             t.SetInput(pd);
             t.Update();
-            vtkSmoothPolyDataFilter s = new vtkSmoothPolyDataFilter();
+            var s = new vtkSmoothPolyDataFilter();
             s.SetInput(t.GetOutput());
             s.SetNumberOfIterations(0);
             s.Update();
-        
-            vtkPolyDataMapper m = vtkPolyDataMapper.New();
+
+            var m = vtkPolyDataMapper.New();
             m.SetLookupTable(lut);
             m.SetScalarRange(val.Min(), val.Max());
             m.SetInput(s.GetOutput());
-           
-            vtkTextProperty p = new vtkTextProperty();
-            p.SetColor(1,0,0);
+
+            var p = new vtkTextProperty();
+            p.SetColor(1, 0, 0);
             p.SetFontSize(32);
-            vtkScalarBarActor colorbar = new vtkScalarBarActor();
+            var colorbar = new vtkScalarBarActor();
             colorbar.SetLookupTable(lut);
             colorbar.SetWidth(0.05);
             colorbar.SetPosition(0.95, 0.1);
             colorbar.SetMaximumNumberOfColors(256);
             colorbar.SetNumberOfLabels(4);
-           colorbar.SetLabelTextProperty(p);
+            colorbar.SetLabelTextProperty(p);
             colorbar.PickableOff();
             colorbar.VisibilityOn();
             colorbar.SetOrientation(1);
-            vtkActor a = new vtkActor();
+            var a = new vtkActor();
             a.GetProperty().SetSpecular(0.3);
             a.GetProperty().SetSpecularPower(3);
             a.GetProperty().SetAmbient(0.1);
@@ -881,8 +867,6 @@ vtkSmoothPolyDataFilter s = new vtkSmoothPolyDataFilter();
             a.SetMapper(m);
             ren.AddActor(a);
 
-
-        
 
             // vtkActor a2 = new vtkActor();
             // a2.SetMapper(m1);

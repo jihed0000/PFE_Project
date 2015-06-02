@@ -40,7 +40,7 @@
             this.folderBrowser = new System.Windows.Forms.FolderBrowserDialog();
             this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.timer = new System.Windows.Forms.Timer(this.components);
-            this.time = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBox1
@@ -86,11 +86,11 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(238, 123);
+            this.button3.Location = new System.Drawing.Point(93, 123);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(53, 28);
+            this.button3.Size = new System.Drawing.Size(130, 28);
             this.button3.TabIndex = 5;
-            this.button3.Text = "Start";
+            this.button3.Text = "Start OBJ";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -124,20 +124,22 @@
             // 
             this.timer.Enabled = true;
             // 
-            // time
+            // button4
             // 
-            this.time.AutoSize = true;
-            this.time.Location = new System.Drawing.Point(518, 178);
-            this.time.Name = "time";
-            this.time.Size = new System.Drawing.Size(0, 13);
-            this.time.TabIndex = 8;
+            this.button4.Location = new System.Drawing.Point(286, 123);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(137, 28);
+            this.button4.TabIndex = 8;
+            this.button4.Text = "Start VRML";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // batchfile
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(587, 226);
-            this.Controls.Add(this.time);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.button3);
@@ -166,6 +168,6 @@
         private System.Windows.Forms.FolderBrowserDialog folderBrowser;
         private System.ComponentModel.BackgroundWorker backgroundWorker;
         private System.Windows.Forms.Timer timer;
-        private System.Windows.Forms.Label time;
+        private System.Windows.Forms.Button button4;
     }
 }
