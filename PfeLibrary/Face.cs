@@ -121,8 +121,10 @@ namespace PFEProject
             RenderSingleLandmarkObject(_vtkSphere);
         }
 
-        public double[] nosedetectionvrml(vtkPolyData faceimporter)
-        {double[] maxp= new double[3];
+        public double[] nosedetectionvrml()
+        {
+            vtkPolyData faceimporter = this.PolyData;
+            double[] maxp= new double[3];
             double[] maxp2= new double[3];
 
             vtkCutter cutx = new vtkCutter();
@@ -260,29 +262,30 @@ namespace PFEProject
 
         public double[] Extract_nose_location()
         {
-            var coordinates = new double[3];
-            var pd = new vtkPolyData();
-            var sphere = new vtkSphere();
-            double maxz;
-            coordinates = MathOperations.GetMean(_matrix[42], _matrix[43]);
-            sphere.SetRadius(15);
-            sphere.SetCenter(coordinates[0], coordinates[1], coordinates[2]);
-            var crop = new vtkClipPolyData();
-            crop.SetInput(PolyData);
-            crop.SetInsideOut(1);
-            crop.SetClipFunction(sphere);
-            crop.Update();
-            pd = crop.GetOutput();
-            var maxpoint = new double[3];
-            maxpoint = pd.GetPoint(0);
-            for (int i = 0; i < pd.GetNumberOfPoints(); i++)
-            {
-                if (pd.GetPoint(i)[2] > maxpoint[2])
-                    maxpoint = pd.GetPoint(i);
-            }
+            //var coordinates = new double[3];
+            //var pd = new vtkPolyData();
+            //var sphere = new vtkSphere();
+            //double maxz;
+            //coordinates = MathOperations.GetMean(_matrix[42], _matrix[43]);
+            //sphere.SetRadius(15);
+            //sphere.SetCenter(coordinates[0], coordinates[1], coordinates[2]);
+            //var crop = new vtkClipPolyData();
+            //crop.SetInput(PolyData);
+            //crop.SetInsideOut(1);
+            //crop.SetClipFunction(sphere);
+            //crop.Update();
+            //pd = crop.GetOutput();
+            //var maxpoint = new double[3];
+            //maxpoint = pd.GetPoint(0);
+            //for (int i = 0; i < pd.GetNumberOfPoints(); i++)
+            //{
+            //    if (pd.GetPoint(i)[2] > maxpoint[2])
+            //        maxpoint = pd.GetPoint(i);
+            //}
 
 
-            return maxpoint;
+            //return maxpoint;
+            return nosedetectionvrml();
         }
 
         public void rendernoselocation()
@@ -354,6 +357,7 @@ namespace PFEProject
         {
             var nose1 = new double[3];
             nose1 = noseLocation;
+            
             double theta = 0;
             var planhoriz = new vtkPlane();
             planhoriz.SetOrigin(nose1[0], nose1[1], nose1[2]);
@@ -765,8 +769,8 @@ namespace PFEProject
                     jj++;
                 }
             }
-            File.WriteAllText("c:\\jihed\\"+ s + "_scalars.txt", st);
-            File.WriteAllText( "c:\\jihed\\"+s + "_vects.txt", vt);
+            //File.WriteAllText("c:\\jihed\\"+ s + "_scalars.txt", st);
+            //File.WriteAllText( "c:\\jihed\\"+s + "_vects.txt", vt);
             SharedValues.Sc.Clear();
             SharedValues.Vc.Clear();
         
@@ -786,7 +790,7 @@ namespace PFEProject
             vtkPoints pts_q;
             for (int i = 0; i < face.CollectionCurves.Count; i++)
             {
-                indx = CollectionCurves[i].CalculDistGeo(face.CollectionCurves[i], 6, i);
+                indx = CollectionCurves[i].CalculDistGeo(face.CollectionCurves[i], 1, i);
 
                 pts_beta = new vtkPoints();
                 pts_q = new vtkPoints();
@@ -826,8 +830,8 @@ namespace PFEProject
                     jj++;
                 }
             }
-            File.WriteAllText( s + "_scalars.txt", st);
-            File.WriteAllText(s + "_vects.txt", vt);
+           // File.WriteAllText( s + "_scalars.txt", st);
+           // File.WriteAllText(s + "_vects.txt", vt);
             SharedValues.Sc.Clear();
             SharedValues.Vc.Clear();
             return this;
@@ -839,8 +843,8 @@ namespace PFEProject
             face.PreProcessing();
             NewMethodeextraction((int) nbrecourbes/2, 0.01f, 50);
             face.NewMethodeextraction((int) nbrecourbes/2, 0.01f, 50);
-           save_curves("c:\\mycurve2.txt");
-            face.save_curves("c:\\mycurve.txt");
+           //save_curves("c:\\mycurve2.txt");
+           // face.save_curves("c:\\mycurve.txt");
             int taille_courbe = CollectionCurves[0].beta_rep.GetNumberOfPoints();
             var points = new vtkPoints();
             var colors = new vtkUnsignedCharArray();
@@ -857,8 +861,8 @@ namespace PFEProject
             vtkPoints pts_q;
             for (int i = 0; i < face.CollectionCurves.Count; i++)
             {
-                indx = CollectionCurves[i].CalculDistGeo(face.CollectionCurves[i],6,i);
-              
+               indx = CollectionCurves[i].CalculDistGeo(face.CollectionCurves[i],1,i);
+               // CollectionCurves[i].DistGeodesicSansPD(face.CollectionCurves[i]);
                 pts_beta = new vtkPoints();
                 pts_q = new vtkPoints();
 
@@ -884,7 +888,7 @@ namespace PFEProject
             int cpt;
             var lut = new vtkLookupTable();
             lut.SetNumberOfColors(256);
-            lut.SetHueRange(0.667, 0);
+        //    lut.SetHueRange(0.667, 0);
             lut.Build();
             var pts = new vtkPoints();
             var ca = new vtkCellArray();
@@ -901,15 +905,15 @@ namespace PFEProject
 
 
 
-            for (int ll = 0; ll < SharedValues.Sc.Count; ll++)
-            {
-                if (ll%50 == 0 || ll == 0 || ll == 1)
-                {
-                    SharedValues.Sc[ll] = 0;
-                    SharedValues.Vc[ll] = new Vector3D(0, 0, 0);
-                }
+            //for (int ll = 0; ll < SharedValues.Sc.Count; ll++)
+            //{
+            //    if (ll%50 == 0 || ll == 0 || ll == 1)
+            //    {
+            //        SharedValues.Sc[ll] = 0;
+            //        SharedValues.Vc[ll] = new Vector3D(0, 0, 0);
+            //    }
 
-            }
+            //}
             for (kk = 0; kk < CollectionCurves.Count; kk ++)
             {
                 for (int i = 0; i < CollectionCurves[0].beta_rep.GetNumberOfPoints(); i++)
@@ -921,7 +925,7 @@ namespace PFEProject
                     ca.InsertCellPoint(jj);
 
 
-                    scalaires.InsertNextTuple1(SharedValues.Sc[jj]);
+                    scalaires.InsertNextTuple1(255-255*SharedValues.Sc[jj]);
 
                     vects.InsertNextTuple3(SharedValues.Vc[jj].X, SharedValues.Vc[jj].Y, SharedValues.Vc[jj].Z);
 
@@ -931,6 +935,168 @@ namespace PFEProject
             pd.SetPoints(pts);
             pd.SetVerts(ca);
             pd.GetPointData().SetScalars(scalaires);
+            pd.GetPointData().SetVectors(vects);
+
+            var t = new vtkDelaunay2D();
+            t.SetInput(pd);
+            t.Update();
+            var s = new vtkSmoothPolyDataFilter();
+            s.SetInput(t.GetOutput());
+            s.SetNumberOfIterations(0);
+            s.Update();
+            //var arw = new vtkArrowSource();
+            //arw.SetTipLength(0.5);
+            //arw.SetTipResolution(18);
+            //arw.SetTipRadius(0.1);
+            //var glyp = new vtkGlyph3D();
+            //glyp.SetSource(arw.GetOutput());
+            //glyp.SetInput(s.GetOutput());
+
+            ////  glyp.SetInputArrayToProcess(0, 0, 0, 0, "scalaires");
+            //// glyp.SetInputArrayToProcess(1, 0, 0, 0, "vects");
+            //glyp.SetVectorModeToUseVector();
+            ////  glyp.SetVectorModeToUseNormal();
+            //glyp.SetScaleFactor(5);
+            //glyp.SetColorModeToColorByVector();
+            ////  glyp.SetColorModeToColorByScalar();
+            //glyp.SetScaleModeToScaleByVector();
+
+            //glyp.Update();
+            var m = vtkPolyDataMapper.New();
+            m.SetLookupTable(lut);
+            m.SetInput(s.GetOutput());
+            m.SetScalarRange(0, 200);
+
+            var colorbar = new vtkScalarBarActor();
+            colorbar.SetLookupTable(lut);
+            colorbar.SetWidth(0.05);
+            colorbar.SetPosition(0.95, 0.1);
+            colorbar.SetMaximumNumberOfColors(256);
+            colorbar.SetNumberOfLabels(4);
+            colorbar.PickableOff();
+            colorbar.VisibilityOn();
+
+            var a = new vtkActor();
+            a.GetProperty().SetSpecular(0.3);
+            a.GetProperty().SetSpecularPower(3);
+            a.GetProperty().SetAmbient(0.1);
+            a.GetProperty().SetDiffuse(0.8);
+            a.GetProperty().SetInterpolationToGouraud();
+            a.SetMapper(m);
+            //  Renderer.AddActor(a);
+
+
+            //var m1 = vtkPolyDataMapper.New();
+
+            //m1.SetInput(glyp.GetOutput());
+
+            //var a2 = new vtkActor();
+            //a2.SetMapper(m1);
+            Renderer.AddActor(a);
+            Renderer.SetBackground(245, 245, 245);
+            Renderer.AddActor(colorbar);
+            return Renderer;
+        }
+
+        public List<vtkActor> affiche_DSF(Face face, List<Vector3D> val)
+        {
+            List<vtkActor> actors = new List<vtkActor>();
+            //PreProcessing();
+            //face.PreProcessing();
+            //NewMethodeextraction((int)nbrecourbes / 2, 0.01f, 50);
+            //face.NewMethodeextraction((int)nbrecourbes / 2, 0.01f, 50);
+            //save_curves("c:\\mycurve2.txt");
+            //face.save_curves("c:\\mycurve.txt");
+            int taille_courbe = CollectionCurves[0].beta_rep.GetNumberOfPoints();
+            var points = new vtkPoints();
+            var colors = new vtkUnsignedCharArray();
+            int nbre_points = CollectionCurves.Count *
+                              CollectionCurves[0].beta_rep.GetNumberOfPoints();
+            colors.SetNumberOfComponents(3);
+            double valeur_color;
+
+
+
+            int[] indx = new int[50];
+
+            vtkPoints pts_beta;
+            vtkPoints pts_q;
+            //for (int i = 0; i < face.CollectionCurves.Count; i++)
+            //{
+            //    indx = CollectionCurves[i].CalculDistGeo(face.CollectionCurves[i], 6, i);
+
+            //    pts_beta = new vtkPoints();
+            //    pts_q = new vtkPoints();
+
+
+            //    for (int j = 0; j < 50; j++)
+            //    {
+            //        pts_beta.InsertPoint(j, CollectionCurves[i].beta_rep.GetPoint(indx[j])[0], CollectionCurves[i].beta_rep.GetPoint(indx[j])[1],
+            //           CollectionCurves[i].beta_rep.GetPoint(indx[j])[2]);
+            //        //face.CollectionCurves[i].beta_rep.SetPoint(i, face.CollectionCurves[i].beta_rep.GetPoint(indx[j])[0], face.CollectionCurves[i].beta_rep.GetPoint(indx[j])[1],
+            //        //   face.CollectionCurves[i].beta_rep.GetPoint(indx[j])[2]);
+            //        //face.CollectionCurves[i].q_rep.SetPoint(i, face.CollectionCurves[i].q_rep.GetPoint(indx[j])[0], face.CollectionCurves[i].q_rep.GetPoint(indx[j])[1],
+            //        //face.CollectionCurves[i].q_rep.GetPoint(indx[j])[2]);
+            //        pts_q.InsertPoint(j, CollectionCurves[i].q_rep.GetPoint(indx[j])[0], CollectionCurves[i].q_rep.GetPoint(indx[j])[1],
+            //         CollectionCurves[i].q_rep.GetPoint(indx[j])[2]);
+
+
+            //    }
+            //    CollectionCurves[i].beta_rep.SetData(pts_beta.GetData());
+            //    CollectionCurves[i].q_rep.SetData(pts_q.GetData());
+            //}
+            var scalars = new vtkIntArray();
+            var couleurs = new double[5000];
+            int cpt;
+            var lut = new vtkLookupTable();
+            lut.SetNumberOfColors(256);
+            lut.SetHueRange(0.667, 0);
+            lut.Build();
+            var pts = new vtkPoints();
+            var ca = new vtkCellArray();
+            var pd = new vtkPolyData();
+            var scalaires = new vtkIntArray();
+            vtkDataArray vects = new vtkDoubleArray();
+            vects.SetNumberOfComponents(3);
+            int kk = 0;
+            int jj = 0;
+            //for (int i = 0; i < CollectionCurves.Count; i++)
+            //{
+            //    CollectionCurves[i].calculer_alpha_point(face.CollectionCurves[i], i);
+            //}
+
+
+
+            //for (int ll = 0; ll < SharedValues.Sc.Count; ll++)
+            //{
+            //    if (ll % 50 == 0 || ll == 0 || ll == 1)
+            //    {
+            //        SharedValues.Sc[ll] = 0;
+            //        SharedValues.Vc[ll] = new Vector3D(0, 0, 0);
+            //    }
+
+            //}
+            for (kk = 0; kk < CollectionCurves.Count; kk++)
+            {
+                for (int i = 0; i < CollectionCurves[0].beta_rep.GetNumberOfPoints(); i++)
+                {
+                    pts.InsertNextPoint(CollectionCurves[kk].beta_rep.GetPoint(i)[0],
+                        CollectionCurves[kk].beta_rep.GetPoint(i)[1],
+                        CollectionCurves[kk].beta_rep.GetPoint(i)[2]);
+                    ca.InsertNextCell(1);
+                    ca.InsertCellPoint(jj);
+
+
+                    scalaires.InsertNextTuple1(Math.Sqrt(val[jj].X * val[jj].X+ val[jj].Y*val[jj].Y+ val[jj].Z* val[jj].Z));
+
+                   vects.InsertNextTuple3(val[jj].X, val[jj].Y, val[jj].Z);
+                   // vects.InsertNextTuple3(0, 0, 0);
+                    jj++;
+                }
+            }
+            pd.SetPoints(pts);
+            pd.SetVerts(ca);
+           pd.GetPointData().SetScalars(scalaires);
             pd.GetPointData().SetVectors(vects);
 
             var t = new vtkDelaunay2D();
@@ -961,7 +1127,7 @@ namespace PFEProject
             var m = vtkPolyDataMapper.New();
             m.SetLookupTable(lut);
             m.SetInput(s.GetOutput());
-            m.SetScalarRange(SharedValues.Sc.Min(), SharedValues.Sc.Max());
+            m.SetScalarRange(scalaires.GetDataTypeMin(),scalaires.GetDataTypeMax());
 
             var colorbar = new vtkScalarBarActor();
             colorbar.SetLookupTable(lut);
@@ -974,12 +1140,12 @@ namespace PFEProject
 
             var a = new vtkActor();
             a.GetProperty().SetSpecular(0.3);
-            a.GetProperty().SetSpecularPower(3);
+            a.GetProperty().SetSpecularPower(2);
             a.GetProperty().SetAmbient(0.1);
             a.GetProperty().SetDiffuse(0.8);
             a.GetProperty().SetInterpolationToGouraud();
             a.SetMapper(m);
-            //  Renderer.AddActor(a);
+          // Renderer.AddActor(a);
 
 
             var m1 = vtkPolyDataMapper.New();
@@ -988,109 +1154,10 @@ namespace PFEProject
 
             var a2 = new vtkActor();
             a2.SetMapper(m1);
-            Renderer.AddActor(a2);
-            Renderer.SetBackground(245, 245, 245);
-            Renderer.AddActor(colorbar);
-            return Renderer;
-        }
+            //actors.Add(a);
+            actors.Add(a2);
 
-        public vtkRenderer 
-            affiche_DSF(Face face, List<Vector3D> val)
-        {
-            //this.PreProcessing();
-            //face.PreProcessing();
-            //this.NewMethodeextraction((int)nbrecourbes / 2, 0.01f, 50);
-            //face.NewMethodeextraction((int)nbrecourbes / 2, 0.01f, 50);
-            int taille_courbe = CollectionCurves[0].beta_rep.GetNumberOfPoints();
-            var points = new vtkPoints();
-            var colors = new vtkUnsignedCharArray();
-            int nbre_points = CollectionCurves.Count*
-                              CollectionCurves[0].beta_rep.GetNumberOfPoints();
-            colors.SetNumberOfComponents(3);
-        
-            var lut = new vtkLookupTable();
-            lut.SetNumberOfColors(256);
-            lut.SetHueRange(0.667, 0);
-
-            //      lut.SetValueRange(val.Min(), val.Max());
-            lut.Build();
-            var pts = new vtkPoints();
-            var ca = new vtkCellArray();
-            var pd = new vtkPolyData();
-            var scalaires = new vtkIntArray();
-            vtkDataArray vects = new vtkDoubleArray();
-            vtkRenderer ren = new vtkOpenGLRenderer();
-            vects.SetNumberOfComponents(3);
-            int kk = 0;
-            int jj = 0;
-            //for (int i = 0; i < CollectionCurves.Count; i++)
-            //{
-            //    CollectionCurves[i].calculer_alpha_point(face.CollectionCurves[i],i);
-            //}
-
-            for (kk = 0; kk < CollectionCurves.Count; kk++)
-            {
-                for (int i = 0; i < CollectionCurves[0].beta_rep.GetNumberOfPoints(); i++)
-                {
-                    pts.InsertNextPoint(CollectionCurves[kk].beta_rep.GetPoint(i)[0],
-                        CollectionCurves[kk].beta_rep.GetPoint(i)[1],
-                        CollectionCurves[kk].beta_rep.GetPoint(i)[2]);
-                    ca.InsertNextCell(1);
-                    ca.InsertCellPoint(jj);
-
-
-                   // scalaires.InsertNextTuple1(255 - 255*val[jj]);
-                    vects.InsertNextTuple3(val[jj].X, val[jj].Y, val[jj].Z);
-
-                    jj++;
-                }
-            }
-            pd.SetPoints(pts);
-            pd.SetVerts(ca);
-            pd.GetPointData().SetVectors(vects);
-
-            var t = new vtkDelaunay2D();
-            t.SetInput(pd);
-            t.Update();
-            var s = new vtkSmoothPolyDataFilter();
-            s.SetInput(t.GetOutput());
-            s.SetNumberOfIterations(0);
-            s.Update();
-
-            var m = vtkPolyDataMapper.New();
-            m.SetLookupTable(lut);
-        //    m.SetScalarRange(val.Min(), val.Max());
-            m.SetInput(s.GetOutput());
-
-            var p = new vtkTextProperty();
-            p.SetColor(1, 0, 0);
-            p.SetFontSize(32);
-            var colorbar = new vtkScalarBarActor();
-            colorbar.SetLookupTable(lut);
-            colorbar.SetWidth(0.05);
-            colorbar.SetPosition(0.95, 0.1);
-            colorbar.SetMaximumNumberOfColors(256);
-            colorbar.SetNumberOfLabels(4);
-            colorbar.SetLabelTextProperty(p);
-            colorbar.PickableOff();
-            colorbar.VisibilityOn();
-            colorbar.SetOrientation(1);
-            var a = new vtkActor();
-            a.GetProperty().SetSpecular(0.3);
-            a.GetProperty().SetSpecularPower(3);
-            a.GetProperty().SetAmbient(0.1);
-            a.GetProperty().SetDiffuse(0.8);
-            a.GetProperty().SetInterpolationToGouraud();
-            a.SetMapper(m);
-            ren.AddActor(a);
-
-
-            // vtkActor a2 = new vtkActor();
-            // a2.SetMapper(m1);
-            //Renderer.AddActor(a2);
-            ren.SetBackground(1, 1, 1);
-            ren.AddActor(colorbar);
-            return ren;
+            return actors;
         }
 
     }

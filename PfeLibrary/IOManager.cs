@@ -132,7 +132,7 @@ namespace PFEProject
                 foreach (string field in fields)
                 {
 
-                    d[j] = double.Parse(field, cultureInfo);
+                    d[j] = double.Parse(field);
                     j++;
                 }
                 j = 0;

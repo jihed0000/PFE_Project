@@ -429,13 +429,6 @@ double partie_decimale;
                 tab[i] = 0;
             }
 
-           
-            
-         
-
-
-
-
             tab[0] = 0;
             tab[49] = 49;
             int limit=6;
@@ -468,7 +461,7 @@ double partie_decimale;
             {
                 st += b.ToString() + '\n';
             }
-            System.IO.File.WriteAllText("c:\\indice.txt", st);
+            //System.IO.File.WriteAllText("c:\\indice.txt", st);
 
 
             return tab;
